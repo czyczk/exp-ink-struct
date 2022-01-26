@@ -43,19 +43,19 @@ mod blbc {
         #[ink(message)]
         pub fn create_inner(
             &mut self,
-            inner: Inner,
+            inner_json_str: String,
             event_id: Option<String>,
         ) -> Result<(), String> {
-            data::create_inner(self, inner, event_id)
+            data::create_inner(self, inner_json_str, event_id)
         }
 
         #[ink(message)]
         pub fn create_outer(
             &mut self,
-            outer: Outer,
+            outer_json_str: String,
             event_id: Option<String>,
         ) -> Result<(), String> {
-            data::create_outer(self, outer, event_id)
+            data::create_outer(self, outer_json_str, event_id)
         }
 
         #[ink(message)]
@@ -116,8 +116,11 @@ mod blbc {
                 my_value: "mv".into(),
             };
 
+            // Serialize `inner`
+            let inner_json_str = serde_json::to_string(&inner).unwrap();
+
             // Invoke with sinner and expect the return value to be Ok()
-            assert!(blbc.create_inner(inner.clone(), None).is_ok());
+            assert!(blbc.create_inner(inner_json_str, None).is_ok());
 
             // Check if the data in map is as expected
             assert_eq!(blbc.res_inner_map.get(&struct_id), Some(&inner));
@@ -142,11 +145,15 @@ mod blbc {
                 extensions: BTreeMap::new(),
             };
 
+            // Serialize `inner` and `outer`
+            let inner_json_str = serde_json::to_string(&inner).unwrap();
+            let outer_json_str = serde_json::to_string(&outer).unwrap();
+
             // Invoke with inner and expect the return value to be Ok()
-            assert!(blbc.create_inner(inner.clone(), None).is_ok());
+            assert!(blbc.create_inner(inner_json_str, None).is_ok());
 
             // Invoke with outer and expect the return value to be Ok()
-            assert!(blbc.create_outer(outer.clone(), None).is_ok());
+            assert!(blbc.create_outer(outer_json_str, None).is_ok());
 
             // Check if the data in map is as expected
             assert_eq!(blbc.res_inner_map.get(&inner_struct_id), Some(&inner));

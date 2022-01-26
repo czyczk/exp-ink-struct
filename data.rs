@@ -8,7 +8,17 @@ use crate::{
     model::data::{Inner, Outer},
 };
 
-pub fn create_inner(ctx: &mut Blbc, inner: Inner, event_id: Option<String>) -> Result<(), String> {
+pub fn create_inner(
+    ctx: &mut Blbc,
+    inner_json_str: String,
+    event_id: Option<String>,
+) -> Result<(), String> {
+    // Parse `inner`
+    let inner: Inner = match serde_json::from_str(&inner_json_str) {
+        Ok(it) => it,
+        Err(err) => return Err(format!("{}", err)),
+    };
+
     let id = inner.id.clone();
     ctx.res_inner_map.insert(id.clone(), inner);
 
@@ -22,7 +32,17 @@ pub fn create_inner(ctx: &mut Blbc, inner: Inner, event_id: Option<String>) -> R
     return Ok(());
 }
 
-pub fn create_outer(ctx: &mut Blbc, outer: Outer, event_id: Option<String>) -> Result<(), String> {
+pub fn create_outer(
+    ctx: &mut Blbc,
+    outer_json_str: String,
+    event_id: Option<String>,
+) -> Result<(), String> {
+    // Parse `outer`
+    let outer: Outer = match serde_json::from_str(&outer_json_str) {
+        Ok(it) => it,
+        Err(err) => return Err(format!("{}", err)),
+    };
+
     let id = outer.id.clone();
     ctx.res_outer_map.insert(id.clone(), outer);
 

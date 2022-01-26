@@ -4,8 +4,11 @@ use alloc::collections::BTreeMap;
 use ink_prelude::string::String;
 use ink_storage::traits::{PackedLayout, SpreadLayout};
 use scale::{Decode, Encode};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Eq, PartialEq, Decode, Encode, PackedLayout, SpreadLayout)]
+#[derive(
+    Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Decode, Encode, PackedLayout, SpreadLayout,
+)]
 #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
 /// ResMetadata 包含要传入链码的资源的元数据
 pub struct Inner {
@@ -14,7 +17,9 @@ pub struct Inner {
     pub my_value: String,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Decode, Encode, PackedLayout, SpreadLayout)]
+#[derive(
+    Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Decode, Encode, PackedLayout, SpreadLayout,
+)]
 #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
 pub struct Outer {
     pub id: String,
