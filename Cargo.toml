@@ -1,20 +1,20 @@
 [package]
-name = "blbc"
+name = "structcontract"
 version = "0.1.0"
 authors = ["[your_name] <[your_email]>"]
 edition = "2018"
 resolver = "2"
 
 [dependencies]
-ink_primitives = { version = "3.0.0-rc8", default-features = false }
-ink_prelude = { version = "3.0.0-rc8", default-features = false }
-ink_metadata = { version = "3.0.0-rc8", default-features = false, features = ["derive"], optional = true }
-ink_env = { version = "3.0.0-rc8", default-features = false }
-ink_storage = { version = "3.0.0-rc8", default-features = false }
-ink_lang = { version = "3.0.0-rc8", default-features = false }
+ink_primitives = { version = "3.0.1", default-features = false }
+ink_prelude = { version = "3.0.1", default-features = false }
+ink_metadata = { version = "3.0.1", default-features = false, features = ["derive"], optional = true }
+ink_env = { version = "3.0.1", default-features = false }
+ink_storage = { version = "3.0.1", default-features = false }
+ink_lang = { version = "3.0.1", default-features = false }
 
-scale = { package = "parity-scale-codec", version = "2.1", default-features = false, features = ["derive"] }
-scale-info = { version = "1.0.0", default-features = false, features = ["derive"], optional = true }
+scale-info = { version = "2", default-features = false, features = ["derive"], optional = true }
+scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive", "full"] }
 
 base64 = { version = "0.13.0", default-features = false, features = ["alloc"] }
 
@@ -22,11 +22,11 @@ base64 = { version = "0.13.0", default-features = false, features = ["alloc"] }
 sha2 = "0.10.0"
 
 [lib]
-name = "blbc"
+name = "structcontract"
 path = "lib.rs"
 crate-type = [
-	# Used for normal contract Wasm blobs.
-	"cdylib",
+    # Used for normal contract Wasm blobs.
+    "cdylib",
 ]
 
 [features]

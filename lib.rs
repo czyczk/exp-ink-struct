@@ -7,20 +7,20 @@ pub mod model;
 
 use ink_lang as ink;
 
-#[ink::contract(dynamic_storage_allocator = true)]
-mod blbc {
+#[ink::contract]
+mod structcontract {
     use crate::{
         data, error_code,
         model::data::{Inner, Outer},
     };
     use ink_prelude::string::String;
-    use ink_prelude::vec::Vec;
-    use ink_storage::collections::HashMap;
+    use ink_storage::{traits::SpreadAllocate, Mapping};
 
     #[ink(storage)]
-    pub struct Blbc {
-        pub res_outer_map: HashMap<String, Outer>,
-        pub res_inner_map: HashMap<String, Inner>,
+    #[derive(SpreadAllocate)]
+    pub struct StructContract {
+        pub res_outer_map: Mapping<String, Outer>,
+        pub res_inner_map: Mapping<String, Inner>,
     }
 
     #[ink(event)]
@@ -29,15 +29,10 @@ mod blbc {
         pub struct_id: String,
     }
 
-    impl Blbc {
+    impl StructContract {
         #[ink(constructor)]
         pub fn default() -> Self {
-            Self {
-                //res_outer_map: Default::default(),
-                //res_inner_map: Default::default(),
-                res_outer_map: HashMap::new(),
-                res_inner_map: HashMap::new(),
-            }
+            ink_lang::utils::initialize_contract(|_: &mut Self| {})
         }
 
         #[ink(message)]
@@ -100,15 +95,16 @@ mod blbc {
 
         #[ink::test]
         fn default_works() {
-            let blbc = Blbc::default();
-            assert_eq!(blbc.res_inner_map.len(), 0);
-            assert_eq!(blbc.res_outer_map.len(), 0);
+            let c = StructContract::default();
+            // No way to count a map in the current version
+            // assert_eq!(c.res_inner_map.len(), 0);
+            // assert_eq!(c.res_outer_map.len(), 0);
         }
 
         #[ink::test]
         fn create_inner_works() {
             // Prepare
-            let mut blbc = Blbc::default();
+            let mut c = StructContract::default();
             let struct_id: String = "111".into();
             let inner = Inner {
                 id: struct_id.clone(),
@@ -117,16 +113,16 @@ mod blbc {
             };
 
             // Invoke with sinner and expect the return value to be Ok()
-            assert!(blbc.create_inner(inner.clone(), None).is_ok());
+            assert!(c.create_inner(inner.clone(), None).is_ok());
 
             // Check if the data in map is as expected
-            assert_eq!(blbc.res_inner_map.get(&struct_id), Some(&inner));
+            assert_eq!(c.res_inner_map.get(&struct_id), Some(inner));
         }
 
         #[ink::test]
         fn create_outer_works() {
             // Prepare
-            let mut blbc = Blbc::default();
+            let mut c = StructContract::default();
             let inner_struct_id: String = "111".into();
             let inner = Inner {
                 id: inner_struct_id.clone(),
@@ -143,14 +139,14 @@ mod blbc {
             };
 
             // Invoke with inner and expect the return value to be Ok()
-            assert!(blbc.create_inner(inner.clone(), None).is_ok());
+            assert!(c.create_inner(inner.clone(), None).is_ok());
 
             // Invoke with outer and expect the return value to be Ok()
-            assert!(blbc.create_outer(outer.clone(), None).is_ok());
+            assert!(c.create_outer(outer.clone(), None).is_ok());
 
             // Check if the data in map is as expected
-            assert_eq!(blbc.res_inner_map.get(&inner_struct_id), Some(&inner));
-            assert_eq!(blbc.res_outer_map.get(&outer_struct_id), Some(&outer));
+            assert_eq!(c.res_inner_map.get(&inner_struct_id), Some(inner));
+            assert_eq!(c.res_outer_map.get(&outer_struct_id), Some(outer));
         }
     }
 }
