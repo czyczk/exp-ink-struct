@@ -11,9 +11,9 @@ use ink_lang as ink;
 mod structcontract {
     use crate::{
         data, error_code,
-        model::data::{Inner, Outer},
+        model::data::{Inner, Outer, Shape},
     };
-    use ink_prelude::string::String;
+    use ink_prelude::{format, string::String};
     use ink_storage::{traits::SpreadAllocate, Mapping};
 
     #[ink(storage)]
@@ -76,6 +76,16 @@ mod structcontract {
             // 合约现还不支持范型，故不能指定 lifetime，只能把有所有权的东西传出。
             return Ok(outer.clone());
         }
+
+        #[ink(message)]
+        pub fn determine_shape(&self, shape: Shape) -> String {
+            match shape {
+                Shape::Circle(circle) => format!("Circle with radius of {}", circle.radius),
+                Shape::Rectangle(rect) => {
+                    format!("Rectangle with x of {} and y of {}", rect.x, rect.y)
+                }
+            }
+        }
     }
 
     /// Unit tests in Rust are normally defined within such a `#[cfg(test)]`
@@ -88,14 +98,14 @@ mod structcontract {
 
         extern crate alloc;
 
-        use crate::model::data::{Inner, Outer};
+        use crate::model::data::{Circle, Inner, Outer, Rectangle};
         use alloc::collections::BTreeMap;
         /// Imports `ink_lang` so we can use `#[ink::test]`.
         use ink_lang as ink;
 
         #[ink::test]
         fn default_works() {
-            let c = StructContract::default();
+            let _c = StructContract::default();
             // No way to count a map in the current version
             // assert_eq!(c.res_inner_map.len(), 0);
             // assert_eq!(c.res_outer_map.len(), 0);
@@ -147,6 +157,18 @@ mod structcontract {
             // Check if the data in map is as expected
             assert_eq!(c.res_inner_map.get(&inner_struct_id), Some(inner));
             assert_eq!(c.res_outer_map.get(&outer_struct_id), Some(outer));
+        }
+
+        #[ink::test]
+        fn determine_shape_works() {
+            // Prepare
+            let c = StructContract::default();
+
+            let resp = c.determine_shape(Shape::Circle(Circle { radius: 1 }));
+            assert!(resp.contains("Circle"));
+
+            let resp = c.determine_shape(Shape::Rectangle(Rectangle { x: 2, y: 3 }));
+            assert!(resp.contains("Rectangle"));
         }
     }
 }

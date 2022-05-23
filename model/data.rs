@@ -22,3 +22,23 @@ pub struct Outer {
     pub my_inner: Inner,
     pub extensions: BTreeMap<String, String>,
 }
+
+#[derive(Debug, Clone, Eq, PartialEq, Decode, Encode, PackedLayout, SpreadLayout)]
+#[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+pub struct Circle {
+    pub radius: i64,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Decode, Encode, PackedLayout, SpreadLayout)]
+#[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+pub struct Rectangle {
+    pub x: i64,
+    pub y: i64,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Decode, Encode, PackedLayout, SpreadLayout)]
+#[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+pub enum Shape {
+    Circle(Circle),
+    Rectangle(Rectangle),
+}
